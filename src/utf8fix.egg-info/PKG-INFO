@@ -1,0 +1,67 @@
+Metadata-Version: 2.4
+Name: utf8fix
+Version: 0.1.0
+Summary: A utility to fix character encoding issues in file and directory names
+Author-email: Your Name <your.email@example.com>
+License: BSD 3-Clause
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Provides-Extra: test
+Requires-Dist: pytest>=6.0; extra == "test"
+Requires-Dist: pytest-cov>=2.0; extra == "test"
+Requires-Dist: tox>=3.24; extra == "test"
+
+# UTF-8 Filename Fixer
+
+A Python utility to fix character encoding issues in file and directory names.
+
+## Features
+
+- Fix invalid UTF-8 characters in filenames
+- Option to convert to ASCII-only names
+- Dry-run mode to preview changes
+- Optional logging to file
+
+## Usage
+
+```bash
+# Using pip-installed version
+utf8fix directory [--mode {preserve,ascii}] [--dry-run] [--log-file LOG_FILE]
+
+# Using the script directly
+python -m utf8fix directory [--mode {preserve,ascii}] [--dry-run] [--log-file LOG_FILE]
+```
+
+### Arguments
+
+- `directory`: Directory to process
+- `--mode`: Choose 'preserve' to keep valid UTF-8 or 'ascii' for ASCII-only names
+- `--dry-run`: Preview changes without making them
+- `--log-file`: Optional log file path
+
+### Examples
+
+```bash
+# Preview changes
+python utf8fix.py ./my_files --dry-run
+
+# Fix names preserving valid UTF-8
+python utf8fix.py ./my_files
+
+# Convert to ASCII-only with logging
+python utf8fix.py ./my_files --mode ascii --log-file changes.log
+```
+
+## Disclaimer
+
+This is a utility script provided as-is without any warranties. Use at your own risk.
+
+## License
+
+This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.

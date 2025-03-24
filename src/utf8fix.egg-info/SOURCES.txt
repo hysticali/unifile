@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+setup.py
+src/utf8fix/__init__.py
+src/utf8fix/utf8fix.py
+src/utf8fix.egg-info/PKG-INFO
+src/utf8fix.egg-info/SOURCES.txt
+src/utf8fix.egg-info/dependency_links.txt
+src/utf8fix.egg-info/entry_points.txt
+src/utf8fix.egg-info/requires.txt
+src/utf8fix.egg-info/top_level.txt
+tests/test_utf8fix.py
