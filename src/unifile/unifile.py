@@ -135,32 +135,36 @@ def setup_logging():
         format='%(message)s'
     )
 
+def clean_filename(filename: str) -> str:
+    """Clean filename by removing or replacing invalid characters"""
+    try:
+        # Handle surrogate pairs and invalid characters
+        return filename.encode('utf-8', errors='ignore').decode('utf-8')
+    except UnicodeError:
+        # Try alternative encodings
+        try:
+            return filename.encode('cp1252', errors='ignore').decode('cp1252')
+        except UnicodeError:
+            return ''.join(char for char in filename if ord(char) < 0x10000)
+
 def process_path(path: Path, dry_run: bool = True):
-    """Process a path and show/make encoding fixes
-    
-    Args:
-        path: Path to process
-        dry_run: If True, only show changes without making them
-    """
+    """Process a path and show/make encoding fixes"""
     for item in path.rglob('*'):
         try:
-            # Get the raw bytes of the filename
-            raw_bytes = str(item).encode('utf-8')
-            # Try to decode with different encodings
-            decoded = raw_bytes.decode('cp1252')
-            encoded = decoded.encode('utf-8')
+            current_name = item.name
+            new_name = clean_filename(current_name)
             
-            if raw_bytes != encoded:
-                old_name = item.name
-                new_name = decoded
+            if current_name != new_name:
                 if dry_run:
-                    logging.info(f"Would rename: {old_name} -> {new_name}")
+                    logging.info(f"Would rename: {current_name} -> {new_name}")
                 else:
-                    logging.info(f"Renaming: {old_name} -> {new_name}")
-                    # Uncomment to actually rename
-                    # item.rename(item.parent / new_name)
+                    logging.info(f"Renaming: {current_name} -> {new_name}")
+                    try:
+                        item.rename(item.parent / new_name)
+                    except OSError as e:
+                        logging.error(f"Failed to rename {current_name}: {e}")
         except Exception as e:
-            logging.warning(f"Error processing {item}: {e}")
+            logging.error(f"Error processing {item}: {e}")
 
 def main():
     parser = ArgumentParser(description='Fix character encoding issues in file and directory names')
