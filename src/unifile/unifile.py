@@ -155,14 +155,15 @@ def process_path(path: Path, dry_run: bool = True):
             new_name = clean_filename(current_name)
             
             if current_name != new_name:
+                parent_folder = item.parent.name or item.parent
                 if dry_run:
-                    logging.info(f"Would rename: {current_name} -> {new_name}")
+                    logging.info(f"Would rename: [{parent_folder}] {current_name} -> {new_name}")
                 else:
-                    logging.info(f"Renaming: {current_name} -> {new_name}")
+                    logging.info(f"Renaming: [{parent_folder}] {current_name} -> {new_name}")
                     try:
                         item.rename(item.parent / new_name)
                     except OSError as e:
-                        logging.error(f"Failed to rename {current_name}: {e}")
+                        logging.error(f"Failed to rename [{parent_folder}] {current_name}: {e}")
         except Exception as e:
             logging.error(f"Error processing {item}: {e}")
 
