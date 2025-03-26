@@ -3,6 +3,7 @@ import logging
 import re
 import unicodedata
 from argparse import ArgumentParser
+from pathlib import Path
 
 # Mapping of common umlaut characters to their ASCII equivalents
 UMLAUT_MAP = {
@@ -128,8 +129,40 @@ def process_directory(directory, mode='preserve', dry_run=False):
                     except OSError as e:
                         logger.error(f"Error renaming directory {old_path}: {e}")
 
+def setup_logging():
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(message)s'
+    )
+
+def process_path(path: Path, dry_run: bool = True):
+    """Process a path and show/make encoding fixes
+    
+    Args:
+        path: Path to process
+        dry_run: If True, only show changes without making them
+    """
+    for item in path.rglob('*'):
+        try:
+            # Get the raw bytes of the filename
+            raw_bytes = str(item).encode('utf-8')
+            # Try to decode with different encodings
+            decoded = raw_bytes.decode('cp1252')
+            encoded = decoded.encode('utf-8')
+            
+            if raw_bytes != encoded:
+                old_name = item.name
+                new_name = decoded
+                if dry_run:
+                    logging.info(f"Would rename: {old_name} -> {new_name}")
+                else:
+                    logging.info(f"Renaming: {old_name} -> {new_name}")
+                    # Uncomment to actually rename
+                    # item.rename(item.parent / new_name)
+        except Exception as e:
+            logging.warning(f"Error processing {item}: {e}")
+
 def main():
-    """Main entry point for the command-line interface."""
     parser = ArgumentParser(description='Fix character encoding issues in file and directory names')
     parser.add_argument('directory', help='Directory to process')
     parser.add_argument('--mode', choices=['preserve', 'ascii'], default='preserve',
@@ -138,21 +171,15 @@ def main():
     parser.add_argument('--log-file', help='Path to the log file (if not specified, only console output is shown)')
     args = parser.parse_args()
 
-    # Configure logging with timestamp and level
-    log_format = '%(asctime)s - %(levelname)s - %(message)s'
-    formatter = logging.Formatter(log_format)
+    setup_logging()
+    target = Path(args.directory)
     
-    # Get the root logger
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO)
-    
-    # Add file handler if log file is specified
-    if args.log_file:
-        file_handler = logging.FileHandler(args.log_file)
-        file_handler.setFormatter(formatter)
-        root_logger.addHandler(file_handler)
-    
-    process_directory(args.directory, args.mode, args.dry_run)
+    if not target.exists():
+        logging.error(f"Path does not exist: {target}")
+        return
+
+    logging.info(f"Scanning {target}")
+    process_path(target, dry_run=args.dry_run)
     logging.info("Processing completed.")
 
 if __name__ == '__main__':
