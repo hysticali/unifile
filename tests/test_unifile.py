@@ -4,7 +4,7 @@ import pytest
 import logging
 from pathlib import Path
 from io import StringIO
-from utf8fix.utf8fix import clean_filename, process_directory, main
+from unifile.unifile import clean_filename, process_directory, main
 
 @pytest.fixture
 def temp_directory(tmp_path):
@@ -165,7 +165,7 @@ def test_main_cli(tmp_path, setup_logging):
     # Test with ASCII mode
     old_argv = sys.argv
     try:
-        sys.argv = ["utf8fix", str(test_dir), "--mode", "ascii"]
+        sys.argv = ["unifile", str(test_dir), "--mode", "ascii"]
         main()
         log_output = setup_logging.getvalue()
         assert "Processing completed" in log_output
@@ -186,7 +186,7 @@ def test_main_cli_with_options(tmp_path, setup_logging):
     log_file = tmp_path / "test.log"
     old_argv = sys.argv
     try:
-        sys.argv = ["utf8fix", str(test_dir), "--mode", "ascii", "--dry-run", "--log-file", str(log_file)]
+        sys.argv = ["unifile", str(test_dir), "--mode", "ascii", "--dry-run", "--log-file", str(log_file)]
         main()
         # Check that the file wasn't actually renamed (dry-run)
         assert test_file.exists()
@@ -199,7 +199,7 @@ def test_main_cli_with_options(tmp_path, setup_logging):
 
 def test_logging_configuration(tmp_path, setup_logging):
     """Test logging configuration."""
-    log_file = tmp_path / "utf8fix.log"
+    log_file = tmp_path / "unifile.log"
     
     # Create a test directory with a file to rename
     test_dir = tmp_path / "test_logging"
@@ -209,7 +209,7 @@ def test_logging_configuration(tmp_path, setup_logging):
     
     old_argv = sys.argv
     try:
-        sys.argv = ["utf8fix", str(test_dir), "--mode", "ascii", "--log-file", str(log_file)]
+        sys.argv = ["unifile", str(test_dir), "--mode", "ascii", "--log-file", str(log_file)]
         main()
         
         # Check log output

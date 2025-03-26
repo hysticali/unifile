@@ -1,132 +1,75 @@
-# UTF-8 Filename Fixer
+# Unifile
 
-A Python utility to fix character encoding issues in file and directory names.
+A command-line utility for normalizing filenames by converting special characters (like umlauts) to their ASCII equivalents while preserving the original meaning.
 
 ## Features
 
-- Fix invalid UTF-8 characters in filenames
-- Option to convert to ASCII-only names
-- Dry-run mode to preview changes
-- Optional logging to file
+- Converts special characters to their ASCII equivalents (e.g., "tést.txt" → "test.txt")
+- Preserves original filenames if no conversion is needed
 - Recursive directory processing
-- Safe handling of control characters
-- Intelligent handling of diacritics and special characters
-- Proper handling of umlaut characters (ä, ö, ü, ß)
+- Dry-run mode for previewing changes
+- Detailed logging of operations
+- Command-line interface with configurable options
 
 ## Installation
 
 ```bash
-# Install from source
-pip install .
-
-# Install with test dependencies
-pip install ".[test]"
+pip install unifile
 ```
 
 ## Usage
 
+Basic usage:
 ```bash
-# Using pip-installed version
-utf8fix directory [--mode {preserve,ascii}] [--dry-run] [--log-file LOG_FILE]
-
-# Using the script directly
-python -m utf8fix directory [--mode {preserve,ascii}] [--dry-run] [--log-file LOG_FILE]
+unifile /path/to/directory
 ```
 
-### Arguments
+With options:
+```bash
+unifile /path/to/directory --mode ascii --dry-run --log-file unifile.log
+```
 
-- `directory`: Directory to process (required)
-- `--mode`: Choose mode for handling special characters:
-  - `preserve` (default): Keep valid UTF-8 characters, only fix invalid ones
-  - `ascii`: Convert all non-ASCII characters to their ASCII equivalents
+### Command-line Options
+
+- `--mode`: Choose the conversion mode
+  - `ascii`: Convert special characters to ASCII equivalents (default)
+  - `preserve`: Keep original characters
 - `--dry-run`: Preview changes without making them
-- `--log-file`: Optional log file path for detailed operation logging
+- `--log-file`: Specify a custom log file path
+- `--help`: Show help message
 
-### Examples
+## Examples
 
 ```bash
-# Preview changes
-utf8fix ./my_files --dry-run
+# Convert all files in current directory
+unifile .
 
-# Fix names preserving valid UTF-8
-utf8fix ./my_files
+# Preview changes without making them
+unifile /path/to/dir --dry-run
 
-# Convert to ASCII-only with logging
-utf8fix ./my_files --mode ascii --log-file changes.log
+# Use custom log file
+unifile /path/to/dir --log-file mylog.log
 ```
-
-## Behavior
-
-### Preserve Mode
-- Keeps valid UTF-8 characters intact
-- Replaces control characters with "withNull"
-- Maintains original filename structure
-
-Example transformations:
-```
-"tést.txt" → "tést.txt"
-"münchen.doc" → "münchen.doc"
-"file\x00with\x1fnull.txt" → "filewithNull.txt"
-```
-
-### ASCII Mode
-- Converts accented characters to their ASCII equivalents
-- Removes non-ASCII characters
-- Maintains readability and original meaning
-
-Common transformations:
-```
-# Basic accents
-"tést.txt" → "test.txt"
-"café.txt" → "cafe.txt"
-"résumé.pdf" → "resume.pdf"
-
-# Umlaut characters
-"münchen.doc" → "muenchen.doc"
-"über.txt" → "ueber.txt"
-"Österreich.txt" → "Oesterreich.txt"
-
-# Special characters
-"ä" → "ae"
-"ö" → "oe"
-"ü" → "ue"
-"ß" → "ss"
-"Ä" → "Ae"
-"Ö" → "Oe"
-"Ü" → "Ue"
-"ẞ" → "Ss"
-```
-
-### Safety Features
-- Dry-run mode for previewing changes
-- Bottom-up directory processing to avoid path issues
-- Comprehensive error handling and logging
-- File extension preservation
-- Original file content remains unchanged
-- Consistent handling of special characters
 
 ## Development
 
-### Running Tests
-```bash
-# Install test dependencies
-pip install ".[test]"
+To set up the development environment:
 
-# Run tests
-pytest
-
-# Run tests with coverage
-pytest --cov=utf8fix
-```
-
-## Disclaimer
-
-This is a utility script provided as-is without any warranties. Always use the `--dry-run` option first to preview changes, and ensure you have backups of important files before running the utility.
+1. Clone the repository
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. Install development dependencies:
+   ```bash
+   pip install -e ".[dev]"
+   ```
+4. Run tests:
+   ```bash
+   pytest
+   ```
 
 ## License
 
-This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+MIT License - see LICENSE file for details

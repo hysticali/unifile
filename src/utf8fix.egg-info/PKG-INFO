@@ -2,6 +2,8 @@ Metadata-Version: 2.4
 Name: utf8fix
 Version: 0.1.0
 Summary: A utility to fix character encoding issues in file and directory names
+Home-page: https://github.com/yourusername/unifile
+Author: Your Name
 Author-email: Your Name <your.email@example.com>
 License: BSD 3-Clause
 Classifier: Programming Language :: Python :: 3
@@ -10,58 +12,88 @@ Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
 Classifier: License :: OSI Approved :: BSD License
 Classifier: Operating System :: OS Independent
-Requires-Python: >=3.7
+Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 Provides-Extra: test
 Requires-Dist: pytest>=6.0; extra == "test"
 Requires-Dist: pytest-cov>=2.0; extra == "test"
 Requires-Dist: tox>=3.24; extra == "test"
+Dynamic: author
+Dynamic: home-page
+Dynamic: requires-python
 
-# UTF-8 Filename Fixer
+# Unifile
 
-A Python utility to fix character encoding issues in file and directory names.
+A command-line utility for normalizing filenames by converting special characters (like umlauts) to their ASCII equivalents while preserving the original meaning.
 
 ## Features
 
-- Fix invalid UTF-8 characters in filenames
-- Option to convert to ASCII-only names
-- Dry-run mode to preview changes
-- Optional logging to file
+- Converts special characters to their ASCII equivalents (e.g., "tést.txt" → "test.txt")
+- Preserves original filenames if no conversion is needed
+- Recursive directory processing
+- Dry-run mode for previewing changes
+- Detailed logging of operations
+- Command-line interface with configurable options
+
+## Installation
+
+```bash
+pip install unifile
+```
 
 ## Usage
 
+Basic usage:
 ```bash
-# Using pip-installed version
-utf8fix directory [--mode {preserve,ascii}] [--dry-run] [--log-file LOG_FILE]
-
-# Using the script directly
-python -m utf8fix directory [--mode {preserve,ascii}] [--dry-run] [--log-file LOG_FILE]
+unifile /path/to/directory
 ```
 
-### Arguments
+With options:
+```bash
+unifile /path/to/directory --mode ascii --dry-run --log-file unifile.log
+```
 
-- `directory`: Directory to process
-- `--mode`: Choose 'preserve' to keep valid UTF-8 or 'ascii' for ASCII-only names
+### Command-line Options
+
+- `--mode`: Choose the conversion mode
+  - `ascii`: Convert special characters to ASCII equivalents (default)
+  - `preserve`: Keep original characters
 - `--dry-run`: Preview changes without making them
-- `--log-file`: Optional log file path
+- `--log-file`: Specify a custom log file path
+- `--help`: Show help message
 
-### Examples
+## Examples
 
 ```bash
-# Preview changes
-python utf8fix.py ./my_files --dry-run
+# Convert all files in current directory
+unifile .
 
-# Fix names preserving valid UTF-8
-python utf8fix.py ./my_files
+# Preview changes without making them
+unifile /path/to/dir --dry-run
 
-# Convert to ASCII-only with logging
-python utf8fix.py ./my_files --mode ascii --log-file changes.log
+# Use custom log file
+unifile /path/to/dir --log-file mylog.log
 ```
 
-## Disclaimer
+## Development
 
-This is a utility script provided as-is without any warranties. Use at your own risk.
+To set up the development environment:
+
+1. Clone the repository
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. Install development dependencies:
+   ```bash
+   pip install -e ".[dev]"
+   ```
+4. Run tests:
+   ```bash
+   pytest
+   ```
 
 ## License
 
-This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
+MIT License - see LICENSE file for details

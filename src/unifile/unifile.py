@@ -92,50 +92,45 @@ def process_directory(directory, mode='preserve', dry_run=False):
     if directory is None:
         raise TypeError("Directory cannot be None")
     if not directory:
-        raise ValueError("Directory path cannot be empty")
-    if not isinstance(directory, (str, os.PathLike)):
-        raise TypeError("Directory must be a string or path-like object")
+        raise ValueError("Directory cannot be empty")
     if not os.path.exists(directory):
         raise ValueError(f"Directory does not exist: {directory}")
-    if not os.path.isdir(directory):
-        raise ValueError(f"Path is not a directory: {directory}")
-
-    # First pass: Process directories bottom-up to avoid path issues
-    # when parent directories are renamed
-    for root, dirs, _ in os.walk(directory, topdown=False):
-        for name in dirs:
-            try:
-                new_name = clean_filename(name, mode)
-                if name != new_name:
-                    old_path = os.path.join(root, name)
-                    new_path = os.path.join(root, new_name)
-                    if dry_run:
-                        logger.info(f"Would rename directory: {old_path} -> {new_path}")
-                    else:
-                        os.rename(old_path, new_path)
-                        logger.info(f"Renamed directory: {old_path} -> {new_path}")
-            except Exception as e:
-                logger.error(f"Error processing directory {name}: {e}")
-
-    # Second pass: Process files after directories are renamed
-    for root, _, files in os.walk(directory):
+    
+    # Process directories bottom-up to avoid path issues
+    for root, dirs, files in os.walk(directory, topdown=False):
+        # Process files first
         for name in files:
-            try:
-                new_name = clean_filename(name, mode)
-                if name != new_name:
-                    old_path = os.path.join(root, name)
-                    new_path = os.path.join(root, new_name)
-                    if dry_run:
-                        logger.info(f"Would rename file: {old_path} -> {new_path}")
-                    else:
+            old_path = os.path.join(root, name)
+            new_name = clean_filename(name, mode)
+            if new_name != name:
+                new_path = os.path.join(root, new_name)
+                if dry_run:
+                    logger.info(f"Would rename file: {old_path} -> {new_path}")
+                else:
+                    try:
                         os.rename(old_path, new_path)
                         logger.info(f"Renamed file: {old_path} -> {new_path}")
-            except Exception as e:
-                logger.error(f"Error processing {name}: {e}")
+                    except OSError as e:
+                        logger.error(f"Error renaming file {old_path}: {e}")
+        
+        # Then process directories
+        for name in dirs:
+            old_path = os.path.join(root, name)
+            new_name = clean_filename(name, mode)
+            if new_name != name:
+                new_path = os.path.join(root, new_name)
+                if dry_run:
+                    logger.info(f"Would rename directory: {old_path} -> {new_path}")
+                else:
+                    try:
+                        os.rename(old_path, new_path)
+                        logger.info(f"Renamed directory: {old_path} -> {new_path}")
+                    except OSError as e:
+                        logger.error(f"Error renaming directory {old_path}: {e}")
 
 def main():
     """Main entry point for the command-line interface."""
-    parser = ArgumentParser(description='Fix character encoding in file and directory names')
+    parser = ArgumentParser(description='Fix character encoding issues in file and directory names')
     parser.add_argument('directory', help='Directory to process')
     parser.add_argument('--mode', choices=['preserve', 'ascii'], default='preserve',
                       help='preserve: keep valid UTF-8, ascii: convert to ASCII only')
