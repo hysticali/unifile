@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 [project.scripts]
-utf8fix = "unifile.unifile:main"
+unifile = "unifile.unifile:main"
 
 [project.optional-dependencies]
 test = [
@@ -66,3 +66,7 @@ omit = [
     "setup.py",
     "conftest.py",
 ]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["unifile"]
