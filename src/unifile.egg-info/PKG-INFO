@@ -1,0 +1,101 @@
+Metadata-Version: 2.4
+Name: unifile
+Version: 0.1.0
+Summary: A utility to fix character encoding issues in file and directory names
+Home-page: https://github.com/yourusername/unifile
+Author: Your Name
+Author-email: Your Name <your.email@example.com>
+License: BSD 3-Clause
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Provides-Extra: test
+Requires-Dist: pytest>=6.0; extra == "test"
+Requires-Dist: pytest-cov>=2.0; extra == "test"
+Requires-Dist: tox>=3.24; extra == "test"
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+
+# Unifile
+
+A command-line utility for normalizing filenames by converting special characters (like umlauts) to their ASCII equivalents while preserving the original meaning.
+
+## Features
+
+- Converts special characters to their ASCII equivalents (e.g., "tést.txt" → "test.txt")
+- Preserves original filenames if no conversion is needed
+- Recursive directory processing
+- Dry-run mode for previewing changes
+- Detailed logging of operations
+- Command-line interface with configurable options
+
+## Installation
+
+```bash
+pip install unifile
+```
+
+## Usage
+
+Basic usage:
+```bash
+unifile /path/to/directory
+```
+
+With options:
+```bash
+unifile /path/to/directory --mode ascii --dry-run --log-file unifile.log
+```
+
+### Command-line Options
+
+- `--mode`: Choose the conversion mode
+  - `ascii`: Convert special characters to ASCII equivalents (default)
+  - `preserve`: Keep original characters
+- `--dry-run`: Preview changes without making them
+- `--log-file`: Specify a custom log file path
+- `--help`: Show help message
+
+## Examples
+
+```bash
+# Convert all files in current directory
+unifile .
+
+# Preview changes without making them
+unifile /path/to/dir --dry-run
+
+# Use custom log file
+unifile /path/to/dir --log-file mylog.log
+```
+
+## Development
+
+To set up the development environment:
+
+1. Clone the repository
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. Install development dependencies:
+   ```bash
+   pip install -e ".[dev]"
+   ```
+4. Run tests:
+   ```bash
+   pytest
+   ```
+
+## License
+
+This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.

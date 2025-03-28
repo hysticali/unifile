@@ -1,0 +1,14 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+src/unifile/__init__.py
+src/unifile/__main__.py
+src/unifile/unifile.py
+src/unifile.egg-info/PKG-INFO
+src/unifile.egg-info/SOURCES.txt
+src/unifile.egg-info/dependency_links.txt
+src/unifile.egg-info/entry_points.txt
+src/unifile.egg-info/requires.txt
+src/unifile.egg-info/top_level.txt
+tests/test_unifile.py

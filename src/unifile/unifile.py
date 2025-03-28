@@ -2,6 +2,7 @@ import os
 import logging
 import re
 import unicodedata
+import shutil
 from argparse import ArgumentParser
 from pathlib import Path
 
@@ -129,39 +130,60 @@ def process_directory(directory, mode='preserve', dry_run=False):
                     except OSError as e:
                         logger.error(f"Error renaming directory {old_path}: {e}")
 
-def setup_logging():
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(message)s'
-    )
+def setup_logging(log_file=None, preserve_handlers=False):
+    """Set up logging configuration.
+    
+    Args:
+        log_file (str, optional): Path to the log file. If provided, logs will be written to this file
+                                 in addition to console output.
+        preserve_handlers (bool): If True, preserve existing handlers. Used for testing.
+    """
+    root = logging.getLogger()
+    
+    if not preserve_handlers:
+        # Remove any existing handlers
+        for handler in root.handlers[:]:
+            root.removeHandler(handler)
+        handlers = [logging.StreamHandler()]
+    else:
+        # Keep existing handlers
+        handlers = root.handlers[:]
+    
+    if log_file:
+        handlers.append(logging.FileHandler(log_file))
+    
+    # Remove all handlers and re-add them
+    for handler in root.handlers[:]:
+        root.removeHandler(handler)
+    
+    for handler in handlers:
+        handler.setFormatter(logging.Formatter('%(message)s'))
+        root.addHandler(handler)
+    
+    root.setLevel(logging.INFO)
 
-def clean_filename(filename: str) -> str:
-    """Clean filename by removing or replacing invalid characters"""
-    try:
-        # Handle surrogate pairs and invalid characters
-        return filename.encode('utf-8', errors='ignore').decode('utf-8')
-    except UnicodeError:
-        # Try alternative encodings
-        try:
-            return filename.encode('cp1252', errors='ignore').decode('cp1252')
-        except UnicodeError:
-            return ''.join(char for char in filename if ord(char) < 0x10000)
-
-def process_path(path: Path, dry_run: bool = True):
+def process_path(path: Path, mode: str = 'preserve', dry_run: bool = True):
     """Process a path and show/make encoding fixes"""
     for item in path.rglob('*'):
         try:
             current_name = item.name
-            new_name = clean_filename(current_name)
+            new_name = clean_filename(current_name, mode=mode)
             
             if current_name != new_name:
                 parent_folder = item.parent.name or item.parent
                 if dry_run:
-                    logging.info(f"Would rename: [{parent_folder}] {current_name} -> {new_name}")
+                    if item.is_file():
+                        logging.info(f"Would rename file: {item} -> {item.parent / new_name}")
+                    else:
+                        logging.info(f"Would rename directory: {item} -> {item.parent / new_name}")
                 else:
-                    logging.info(f"Renaming: [{parent_folder}] {current_name} -> {new_name}")
+                    if item.is_file():
+                        logging.info(f"Renaming file: {item} -> {item.parent / new_name}")
+                    else:
+                        logging.info(f"Renaming directory: {item} -> {item.parent / new_name}")
                     try:
-                        item.rename(item.parent / new_name)
+                        # Use shutil.move instead of Path.rename to handle non-empty directories
+                        shutil.move(str(item), str(item.parent / new_name))
                     except OSError as e:
                         logging.error(f"Failed to rename [{parent_folder}] {current_name}: {e}")
         except Exception as e:
@@ -176,7 +198,12 @@ def main():
     parser.add_argument('--log-file', help='Path to the log file (if not specified, only console output is shown)')
     args = parser.parse_args()
 
-    setup_logging()
+    # Check if we're running in a test environment (pytest sets up handlers)
+    root_logger = logging.getLogger()
+    in_test = any(isinstance(h, logging.StreamHandler) and hasattr(h.stream, 'getvalue') 
+                 for h in root_logger.handlers)
+    
+    setup_logging(args.log_file, preserve_handlers=in_test)
     target = Path(args.directory)
     
     if not target.exists():
@@ -184,7 +211,7 @@ def main():
         return
 
     logging.info(f"Scanning {target}")
-    process_path(target, dry_run=args.dry_run)
+    process_path(target, mode=args.mode, dry_run=args.dry_run)
     logging.info("Processing completed.")
 
 if __name__ == '__main__':
