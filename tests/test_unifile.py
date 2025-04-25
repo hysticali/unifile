@@ -4,7 +4,7 @@ import pytest
 import logging
 from pathlib import Path
 from io import StringIO
-from unifile.unifile import clean_filename, process_directory, main
+from unifile import clean_filename, process_directory, main
 
 @pytest.fixture
 def temp_directory(tmp_path):

@@ -1,28 +1,25 @@
-Metadata-Version: 2.4
+Metadata-Version: 2.1
 Name: unifile
 Version: 0.1.0
-Summary: A utility to fix character encoding issues in file and directory names
+Summary: A utility for normalizing filenames by converting special characters to ASCII equivalents
 Home-page: https://github.com/yourusername/unifile
 Author: Your Name
-Author-email: Your Name <your.email@example.com>
-License: BSD 3-Clause
+Author-email: your.email@example.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: BSD License
 Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.7
 Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
-Classifier: License :: OSI Approved :: BSD License
-Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
+Provides-Extra: dev
 License-File: LICENSE
-Provides-Extra: test
-Requires-Dist: pytest>=6.0; extra == "test"
-Requires-Dist: pytest-cov>=2.0; extra == "test"
-Requires-Dist: tox>=3.24; extra == "test"
-Dynamic: author
-Dynamic: home-page
-Dynamic: license-file
-Dynamic: requires-python
 
 # Unifile
 
@@ -99,3 +96,5 @@ To set up the development environment:
 ## License
 
 This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
+
+
