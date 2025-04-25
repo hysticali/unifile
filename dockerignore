@@ -1,0 +1,11 @@
+.git
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache/
+tests/
+test_files/
+build/
+.coverage
+.vscode/
